@@ -7,6 +7,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func InitPublicRoutes(router *mux.Router) {
+func initPublicRoutes(router *mux.Router) {
 	router.HandleFunc("/api/user", controllers.GetUser).Methods(http.MethodGet)
 }

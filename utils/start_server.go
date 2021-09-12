@@ -2,25 +2,26 @@ package utils
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/abba5/sample-user/models"
 )
 
 func StartServerWithGracefulShutdown(server models.Server) {
-
 	// Initialize server.
 	httpServer := http.Server{
 		Handler: server.Router,
-		Addr:    "localhost:8080",
+		Addr:    fmt.Sprintf("%s:%s", server.Config.ServerHost, server.Config.ServerPort),
 	}
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
-		log.Println("Server is starting...")
+		log.Printf("Server is starting at %s", httpServer.Addr)
 		if err := httpServer.ListenAndServe(); err != nil {
 			log.Println(err)
 		}
@@ -36,7 +37,7 @@ func StartServerWithGracefulShutdown(server models.Server) {
 	<-c
 
 	// Create a deadline to wait for.
-	ctx, cancel := context.WithTimeout(context.Background(), 0)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	// Doesn't block if no connections, but will otherwise wait
